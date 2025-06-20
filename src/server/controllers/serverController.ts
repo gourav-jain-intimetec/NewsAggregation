@@ -4,6 +4,7 @@ import { IAuthService, AuthService } from '../services/authService';
 import { AuthController } from '../controllers/authController';
 import { IUserRepository, UserRepository } from '../repositories/userRepository';
 import { getDbPool, closeDbPool } from '../config/database';
+import { runArticleFetchNow, scheduleArticleFetchJob } from '../jobs/articleFetchJob';
 
 export default class ServerController {
     private app: Express;
@@ -13,6 +14,11 @@ export default class ServerController {
     constructor(port: number) {
         this.app = express();
         this.port = port;
+    }
+
+    private async runChroneJobs(): Promise<void>{
+        runArticleFetchNow();
+        scheduleArticleFetchJob();
     }
 
     public async initializeServer(): Promise<void> {
@@ -42,7 +48,7 @@ export default class ServerController {
             console.error(err.stack);
             response.status(500).json({ success: false, error: 'Internal server error' });
         });
-
+        this.runChroneJobs();
         this.server = this.app.listen(this.port, () => console.log(`Server running on port ${this.port}`));
     }
 

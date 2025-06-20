@@ -18,7 +18,7 @@ export class UserRepository implements IUserRepository {
 
     async saveUser(user: User): Promise<void> {
         const query = `
-      INSERT INTO users (userId, username, email, hashedPassword, role)
+      INSERT INTO users (user_id, username, email, password_hash, role_id)
       VALUES (?, ?, ?, ?, ?)
     `;
         const values = [
@@ -38,11 +38,11 @@ export class UserRepository implements IUserRepository {
             return undefined;
         }
         const row = rows[0];
-        return new User(row.userId, row.username, row.email, row.hashedPassword, row.role_id);
+        return new User(row.userId, row.username, row.email, row.password_hash, row.role_id);
     }
 
     async getNextUserId(): Promise<number> {
-        const query = 'SELECT MAX(userId) as max FROM users';
+        const query = 'SELECT MAX(user_id) as max FROM users';
         const [rows] = await this.pool.execute<RowDataPacket[]>(query);
         const maxId = rows[0].max || 0;
         return maxId + 1;

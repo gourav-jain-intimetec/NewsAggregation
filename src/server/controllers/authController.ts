@@ -47,7 +47,6 @@ export class AuthController {
 
     private async handleSignup(request: Request, response: Response): Promise<void> {
         try {
-            console.log("Incoming signup data:", request.body);
             const body: SignupRequest = request.body;
             if (!body.username || !body.email || !body.password) {
                 response.status(400).json({ success: false, error: 'All fields are required' });

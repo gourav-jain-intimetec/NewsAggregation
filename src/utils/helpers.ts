@@ -24,4 +24,23 @@ const readLine = readline.createInterface({
 export const askQuestion = (query: string): Promise<string> => {
     return new Promise((resolve) => readLine.question(query, resolve));
 }
-  
+
+export const ask = (question: string): Promise<string> => {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
+
+    return new Promise((resolve) => {
+        rl.question(question, (answer) => {
+            rl.close();
+            resolve(answer.trim());
+        });
+    });
+};
+
+export function getRandomInt(min: number, max: number): number {
+    const minCeil = Math.ceil(min);
+    const maxFloor = Math.floor(max);
+    return Math.floor(Math.random() * (maxFloor - minCeil + 1)) + minCeil;
+}
