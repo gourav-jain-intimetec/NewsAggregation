@@ -5,7 +5,12 @@ import { AuthController } from '../controllers/authController';
 import { IUserRepository, UserRepository } from '../repositories/userRepository';
 import { getDbPool, closeDbPool } from '../config/database';
 import { runArticleFetchNow, scheduleArticleFetchJob } from '../jobs/articleFetchJob';
-
+import { ExternalNewsServerRepository, IExternalServerRepository } from '../repositories/externalNewsServerRepository';
+import { ExternalNewsServerService, IExternalNewsServerService } from '../services/externalNewsServerService';
+import { ExternalServerController } from './externalNewsServerController';
+import categoryRoutes from '../routes/categoryRoutes';
+import { ArticleController } from './articleController';
+import { ArticleService } from '../services/articleService';
 export default class ServerController {
     private app: Express;
     private port: number;
@@ -35,11 +40,15 @@ export default class ServerController {
 
         const userRepository: IUserRepository = new UserRepository();
         const authService: IAuthService = new AuthService(userRepository);
-
         const authController = new AuthController(authService);
+        const externalNewsServerRepository: IExternalServerRepository = new ExternalNewsServerRepository();
+        const externalNewsServerService: IExternalNewsServerService = new ExternalNewsServerService(externalNewsServerRepository);
+        const externalServerController = new ExternalServerController(externalNewsServerService);
+        const articleService = new ArticleService();
+        const articleController = new ArticleController(articleService);
 
-        this.app.use('/api', authController.getRouter());
-
+        this.app.use('/api', authController.getRouter(), externalServerController.getRouter(), categoryRoutes);
+        this.app.use('/api/news', articleController.router);
         this.app.use((request, response) => {
             response.status(404).json({ success: false, error: 'Route not found' });
         });

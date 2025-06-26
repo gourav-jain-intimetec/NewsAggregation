@@ -1,31 +1,42 @@
-import { getFetcher, availableSources } from '../../news/factory/externalFetcherFactory';
+import { getFetcher, availableSources, getSourceDbName } from '../../news/factory/externalFetcherFactory';
 import { ArticleRepository } from '../repositories/articleRepository';
 import { CategoryRepository } from '../repositories/categoryRepository';
 import { KeywordExtractor } from '../../utils/keywordExtractor';
 import { IArticle } from '../../utils/interfaces';
+import { ExternalNewsServerRepository } from '../repositories/externalNewsServerRepository';
 
 export class ArticleFetchController {
     private articleRepo = new ArticleRepository();
     private categoryRepo = new CategoryRepository();
+    private extenalNewsServerRepo = new ExternalNewsServerRepository()
 
     public async fetchAndSaveFromAllSources(): Promise<void> {
         for (const source of availableSources()) {
-            await this.processSource(source);
+            await this.processSource(source).catch(err => {
+                console.error(`[${source}] fetch failed:`, err.message);
+            });
         }
     }
 
     private async processSource(source: string): Promise<void> {
         const fetcher = getFetcher(source);
+        const sourceDBName = getSourceDbName(source);
+        console.log(`Fetching: ${sourceDBName}`);
+        
         const articles = await fetcher.fetchArticles();
         for (const article of articles) {
-            await this.processSingleArticle(article);
+            await this.processSingleArticle(article, sourceDBName);
         }
     }
 
-    private async processSingleArticle(article: Omit<IArticle, 'article_id'>): Promise<void> {
+    private async processSingleArticle(article: Omit<IArticle, 'article_id'>, sourceDBName:string): Promise<void> {
         const id = await this.saveArticle(article);
         await this.saveKeywords(id, article);
         await this.saveCategory(id, article);
+
+        //TODO: Update status of external news server in db.
+        await this.extenalNewsServerRepo.updateLastAccessed(sourceDBName);
+        console.log(`Updated last_accessed for "${sourceDBName}"`);
     }
 
     private async saveArticle(article: Omit<IArticle, 'article_id'>): Promise<number> {

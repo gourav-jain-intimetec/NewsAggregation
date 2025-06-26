@@ -10,3 +10,16 @@ export interface IArticle {
     likes: number;
     dislikes: number;
 }
+
+export interface IExternalServer {
+    serverId: number;
+    name: string;
+    apiKey: string;
+    status: string;
+    lastAccessed: string;
+  }
+  
+export interface ICategory {
+    category_id: number;
+    category_name: string;
+}

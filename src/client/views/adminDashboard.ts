@@ -1,39 +1,50 @@
-import { IUser } from "../../utils/types";
-import { ask } from "../../utils/helpers";
+import { ICategory, IExternalServer } from '../../utils/interfaces';
+import { ask } from '../../utils/helpers';
 
-export class AdminDashboard {
-    async show(user: IUser): Promise<void> {
-        let exit = false;
-        while (!exit) {
-            console.log(`\n=== Admin Dashboard ===`);
-            console.log("1. View External Server Status");
-            console.log("2. View External Server Details");
-            console.log("3. Update/Edit External Server");
-            console.log("4. Add News Category");
-            console.log("5. Logout");
+export class AdminDashboardView {
+    async promptOption(): Promise<string> {
+        console.log('\n=== Admin Dashboard ===');
+        console.log('1. View the list of external servers and status');
+        console.log('2. View the external server’s details');
+        console.log('3. Update/Edit the external server’s API key');
+        console.log('4. Add new News Category');
+        console.log('5. Logout');
+        return await ask('Choose an option: ');
+    }
 
-            const choice = await ask("Choose an option: ");
+    showServers(servers: IExternalServer[]): void {
+        console.log('\nID\tName\tStatus\tLast Accessed');
+        servers.forEach(s => {
+            console.log(s.serverId, '\t', s.name, '\t', s.status, '\t', new Date(s.lastAccessed).toLocaleString());
+        });
+    }
 
-            switch (choice) {
-                case "1":
-                    console.log("→ [TODO] Display server status...");
-                    break;
-                case "2":
-                    console.log("→ [TODO] Display server details...");
-                    break;
-                case "3":
-                    console.log("→ [TODO] Update server config...");
-                    break;
-                case "4":
-                    console.log("→ [TODO] Add new news category...");
-                    break;
-                case "5":
-                    console.log("Logged out.");
-                    exit = true;
-                    break;
-                default:
-                    console.log("Invalid choice. Try again.");
-            }
-        }
+    showServerDetails(s: IExternalServer): void {
+        console.log('\n--- Server Details ---');
+        console.log(`ID:            ${s.serverId}`);
+        console.log(`Name:          ${s.name}`);
+        console.log(`API Key:       ${s.apiKey}`);
+        console.log(`Status:        ${s.status}`);
+        console.log(`Last Accessed: ${new Date(s.lastAccessed).toLocaleString()}`);
+    }
+
+    async promptServerName(): Promise<string> {
+        return ask('Enter server name: ');
+    }
+
+    async promptNewApiKey(): Promise<string> {
+        return ask('Enter new API key: ');
+    }
+
+    async promptCategoryName(): Promise<string> {
+        return ask('Enter new category name: ');
+    }
+
+    showCategoryAdded(): void {
+        console.log(`New category added`);
+      }
+
+    showMessage(msg: string): void {
+        console.log(msg);
     }
 }

@@ -2,13 +2,13 @@ import { INewsFetcher } from '../interfaces/INewsFetcher';
 import { IArticle } from '../../utils/interfaces';
 import axios from 'axios';
 import dotenv from "dotenv";
-import { ExternalServerRepository } from '../../server/repositories/externalNewsServerRepository';
+import { ExternalNewsServerRepository } from '../../server/repositories/externalNewsServerRepository';
 import { getRandomInt } from '../../utils/helpers';
 
 dotenv.config();
 
 export class TheNewsApiFetcher implements INewsFetcher {
-    private externalServerRepository = new ExternalServerRepository();
+    private externalServerRepository = new ExternalNewsServerRepository();
     private baseUrlOfApi = process.env.THE_NEWS_API_URL;
     async fetchArticles(): Promise<IArticle[]> { 
         const apiKey = await this.externalServerRepository.getApiKeyByName('The News API');

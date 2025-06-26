@@ -1,4 +1,4 @@
-import { IUser, LoginRequest, SignupRequest } from '../../utils/types';
+import { LoginRequest, SignupRequest } from '../../utils/types';
 import { ask } from '../../utils/helpers';
 
 export class AuthView {

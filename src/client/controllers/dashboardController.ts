@@ -1,18 +1,18 @@
 import { IUser } from "../../utils/types";
-import { AdminDashboard } from "../views/adminDashboard";
 import { UserDashboard } from "../views/userDashboard";
+import { AdminDashboardController } from "./adminDashboardController";
 
 export class DashboardController {
-    private adminDashboard = new AdminDashboard();
+    private adminDashboardController = new AdminDashboardController();
     private userDashboard = new UserDashboard();
 
     async route(user: IUser): Promise<void> {
         switch (user.role_id) {
             case 1:
-                await this.userDashboard.show(user);
+                await this.adminDashboardController.start();
                 break;
             case 2:
-                await this.adminDashboard.show(user);
+                await this.userDashboard.show(user);
                 break;
             default:
                 console.log("Unknown role. Access denied.");

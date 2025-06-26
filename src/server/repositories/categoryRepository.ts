@@ -28,6 +28,13 @@ export class CategoryRepository {
         return this.createCategory(name);
     }
 
+    async exists(name: string): Promise<boolean> {
+        const query = 'SELECT 1 FROM categories WHERE category_name = ? LIMIT 1';
+        const [rows] = await this.pool.execute<RowDataPacket[]>(query,[name]);
+        return rows.length > 0;
+      }
+
+    //TODO: Refactor logic of categorization.
     async inferOrCreateCategory(article: IArticle): Promise<number> {
         const text = `${article.title} ${article.description}`.toLowerCase();
         let categoryName = 'General';
