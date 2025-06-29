@@ -18,7 +18,7 @@ export class NewsApiFetcher implements INewsFetcher {
         if (!apiKey) throw new Error('API key not found for News API');
 
         const response = await axios.get(this.baseUrlOfApi, {
-            params: { country: 'us', apiKey }
+            params: { apiKey }
           });
         
         return this.mapArticles(response.data.articles);

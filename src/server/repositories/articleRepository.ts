@@ -80,5 +80,41 @@ export class ArticleRepository implements IArticleRepository {
             [date, categoryName]
         );
         return rows as IArticle[];
-      }
+    }
+    
+    async searchArticles(
+        query: string,
+        fromDate?: string,
+        toDate?: string,
+        sortBy?: 'likes' | 'dislikes'
+    ): Promise<IArticle[]> {
+        let sql = `
+            SELECT *
+            FROM articles
+            WHERE title LIKE ?
+        `;
+
+        const params: any[] = [`%${query}%`];
+
+        if (fromDate) {
+            sql += ` AND published_at >= ?`;
+            params.push(fromDate);
+        }
+
+        if (toDate) {
+            sql += ` AND published_at <= ?`;
+            params.push(toDate);
+        }
+
+        if (sortBy === 'likes') {
+            sql += ` ORDER BY likes DESC`;
+        } else if (sortBy === 'dislikes') {
+            sql += ` ORDER BY dislikes DESC`;
+        } else {
+            sql += ` ORDER BY published_at DESC`;
+        }
+
+        const [rows] = await this.pool.query(sql, params);
+        return rows as IArticle[];
+    }
 }

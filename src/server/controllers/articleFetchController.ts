@@ -27,16 +27,15 @@ export class ArticleFetchController {
         for (const article of articles) {
             await this.processSingleArticle(article, sourceDBName);
         }
+
+        await this.extenalNewsServerRepo.updateLastAccessed(sourceDBName);
+        console.log(`Updated last_accessed for "${sourceDBName}"`);
     }
 
     private async processSingleArticle(article: Omit<IArticle, 'article_id'>, sourceDBName:string): Promise<void> {
         const id = await this.saveArticle(article);
         await this.saveKeywords(id, article);
         await this.saveCategory(id, article);
-
-        //TODO: Update status of external news server in db.
-        await this.extenalNewsServerRepo.updateLastAccessed(sourceDBName);
-        console.log(`Updated last_accessed for "${sourceDBName}"`);
     }
 
     private async saveArticle(article: Omit<IArticle, 'article_id'>): Promise<number> {

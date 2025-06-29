@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { ArticleService, IArticleService } from '../services/articleService';
+import { IArticleService } from '../services/articleService';
 
 export class ArticleController {
     router: Router;
@@ -15,6 +15,7 @@ export class ArticleController {
         this.router.get('/headlines/today', this.handleToday.bind(this));
         this.router.get('/headlines/range', this.handleRange.bind(this));
         this.router.get('/headlines', this.handleCategory.bind(this));
+        this.router.get('/search', this.handleSearch.bind(this));
     }
 
     private async handleToday(req: Request, res: Response, next: NextFunction) {
@@ -51,6 +52,28 @@ export class ArticleController {
             const articles = await this.articleService.getCategoryHeadlines(date, category);
             res.json({ success: true, data: articles });
         } catch (err: any) {
+            next(err);
+        }
+    }
+
+    public async handleSearch(req: Request, res: Response, next: NextFunction) {
+        const { q, fromDate, toDate, sort } = req.query;
+
+        if (!q) {
+            res.status(400).json({ success: false, error: 'Search query is required' });
+            return
+        }
+
+        try {
+            const results = await this.articleService.searchArticles(
+                String(q),
+                fromDate ? String(fromDate) : undefined,
+                toDate ? String(toDate) : undefined,
+                sort === 'likes' || sort === 'dislikes' ? (sort as 'likes' | 'dislikes') : undefined
+            );
+
+            res.json({ success: true, data: results });
+        } catch (err) {
             next(err);
         }
     }
