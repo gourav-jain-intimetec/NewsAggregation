@@ -1,8 +1,9 @@
 import { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 import { getDbPool } from '../config/database';
 import { IArticle } from '../../utils/interfaces';
+import { IArticleRepository } from '../interfaces/IArticleRepository';
 
-export class ArticleRepository {
+export class ArticleRepository implements IArticleRepository {
     private pool: Pool;
 
     constructor() {
@@ -13,6 +14,15 @@ export class ArticleRepository {
         const query = 'SELECT 1 FROM articles WHERE article_id = ?';
         const [rows] = await this.pool.execute<RowDataPacket[]>(query, [articleId]);
         return rows.length > 0;
+    }
+
+    async findArticlesByIds(articleIds: number[]): Promise<IArticle[]> {
+        if (!articleIds.length) return [];
+        const placeholders = articleIds.map(() => '?').join(',');
+        const [rows] = await this.pool.execute<RowDataPacket[]>(
+            `SELECT * FROM articles WHERE article_id IN (${placeholders})`, articleIds
+        );
+        return rows as IArticle[];
     }
 
     async saveArticle(article: IArticle): Promise<number> {

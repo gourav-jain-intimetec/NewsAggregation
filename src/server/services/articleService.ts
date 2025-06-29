@@ -1,5 +1,6 @@
 import { ArticleRepository } from '../repositories/articleRepository';
 import { IArticle } from '../../utils/interfaces';
+import { IArticleRepository } from '../interfaces/IArticleRepository';
 
 export interface IArticleService {
     getTodayHeadlines(): Promise<IArticle[]>;
@@ -8,7 +9,7 @@ export interface IArticleService {
 }
 
 export class ArticleService implements IArticleService {
-    constructor(private repo: ArticleRepository = new ArticleRepository()) { }
+    constructor(private repo: IArticleRepository) { }
 
     getTodayHeadlines(): Promise<IArticle[]> {
         const today = new Date().toISOString().slice(0, 10);

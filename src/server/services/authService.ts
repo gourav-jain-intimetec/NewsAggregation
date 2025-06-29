@@ -40,7 +40,7 @@ export class AuthService implements IAuthService {
         
         const hashedPassword = await bcrypt.hash(password, 10);
         const userId = await this.userRepository.getNextUserId();
-        const user = new User(userId, username, email, hashedPassword, 1);
+        const user = new User(userId, username, email, hashedPassword, 2);
         await this.userRepository.saveUser(user);
         return user;
     }

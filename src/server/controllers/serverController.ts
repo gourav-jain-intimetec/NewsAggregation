@@ -11,6 +11,13 @@ import { ExternalServerController } from './externalNewsServerController';
 import categoryRoutes from '../routes/categoryRoutes';
 import { ArticleController } from './articleController';
 import { ArticleService } from '../services/articleService';
+import { IArticleRepository } from '../interfaces/IArticleRepository';
+import { ArticleRepository } from '../repositories/articleRepository';
+import { ISavedArticleRepository } from '../interfaces/ISavedArticleRepository';
+import { SavedArticleRepository } from '../repositories/savedArticleRepository';
+import { SavedArticleService } from '../services/savedArticleService';
+import { SavedArticleController } from './savedArticleController';
+import apiRouter from '../routes';
 export default class ServerController {
     private app: Express;
     private port: number;
@@ -37,25 +44,15 @@ export default class ServerController {
         }
 
         this.app.use(express.json());
-
-        const userRepository: IUserRepository = new UserRepository();
-        const authService: IAuthService = new AuthService(userRepository);
-        const authController = new AuthController(authService);
-        const externalNewsServerRepository: IExternalServerRepository = new ExternalNewsServerRepository();
-        const externalNewsServerService: IExternalNewsServerService = new ExternalNewsServerService(externalNewsServerRepository);
-        const externalServerController = new ExternalServerController(externalNewsServerService);
-        const articleService = new ArticleService();
-        const articleController = new ArticleController(articleService);
-
-        this.app.use('/api', authController.getRouter(), externalServerController.getRouter(), categoryRoutes);
-        this.app.use('/api/news', articleController.router);
+        this.app.use('/api', apiRouter);
+        
         this.app.use((request, response) => {
             response.status(404).json({ success: false, error: 'Route not found' });
         });
 
         this.app.use((err: Error, request: express.Request, response: express.Response, next: express.NextFunction) => {
             console.error(err.stack);
-            response.status(500).json({ success: false, error: 'Internal server error' });
+            response.status(500).json({ success: false, error: err.message });
         });
         this.runChroneJobs();
         this.server = this.app.listen(this.port, () => console.log(`Server running on port ${this.port}`));
