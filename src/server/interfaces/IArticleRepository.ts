@@ -9,6 +9,10 @@ export interface IArticleRepository {
     findByRange(start: string, end: string): Promise<IArticle[]>;
     findByDateAndCategory(date: string, categoryName: string): Promise<IArticle[]>;
     findArticlesByIds(articleIds: number[]): Promise<IArticle[]>;
+    getArticleCategories(articleId: number): Promise<number[]>;
+    getArticleKeywords(articleId: number): Promise<string[]>;
+    findArticlesSince(since: Date): Promise<IArticle[]>
+    getLatestArticleCreatedAt(): Promise<Date | null>;
     searchArticles(
         query: string,
         fromDate?: string,

@@ -81,6 +81,35 @@ export class ArticleRepository implements IArticleRepository {
         );
         return rows as IArticle[];
     }
+
+    async getArticleCategories(articleId: number): Promise<number[]> {
+        const [rows] = await this.pool.execute<RowDataPacket[]>(
+            `SELECT category_id FROM article_categories WHERE article_id = ?`,
+            [articleId]
+        );
+        return rows.map(r => r.category_id);
+    }
+
+    async getArticleKeywords(articleId: number): Promise<string[]> {
+        const [rows] = await this.pool.execute<RowDataPacket[]>(
+            `SELECT keyword FROM article_keywords WHERE article_id = ?`,
+            [articleId]
+        );
+        return rows.map(r => r.keyword);
+    }
+    
+    async findArticlesSince(since: Date): Promise<IArticle[]> {
+        const query = `SELECT * FROM articles WHERE created_at > ? ORDER BY created_at ASC`;
+        const [rows] = await this.pool.execute<RowDataPacket[]>(query, [since]);
+        return rows as IArticle[];
+    }
+
+    async getLatestArticleCreatedAt(): Promise<Date | null> {
+        const sql = `SELECT created_at FROM articles ORDER BY created_at DESC LIMIT 1`;
+        const [rows] = await this.pool.execute<RowDataPacket[]>(sql);
+        if (!rows.length) return null;
+        return new Date(rows[0].created_at);
+      }
     
     async searchArticles(
         query: string,

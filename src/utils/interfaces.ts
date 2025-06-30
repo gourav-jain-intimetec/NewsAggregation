@@ -23,3 +23,19 @@ export interface ICategory {
     category_id: number;
     category_name: string;
 }
+
+export interface INotificationSetting {
+    id: number;
+    user_id: number;
+    category_id: number;
+    enabled: boolean;
+    keywords: string[];
+}
+
+export interface INotification {
+    id: number;
+    user_id: number;
+    article_id: number;
+    sent_at: string;
+    delivered_via: 'email' | 'app';
+}

@@ -1,22 +1,7 @@
 import express, { Express } from 'express';
 import http from 'http';
-import { IAuthService, AuthService } from '../services/authService';
-import { AuthController } from '../controllers/authController';
-import { IUserRepository, UserRepository } from '../repositories/userRepository';
 import { getDbPool, closeDbPool } from '../config/database';
-import { runArticleFetchNow, scheduleArticleFetchJob } from '../jobs/articleFetchJob';
-import { ExternalNewsServerRepository, IExternalServerRepository } from '../repositories/externalNewsServerRepository';
-import { ExternalNewsServerService, IExternalNewsServerService } from '../services/externalNewsServerService';
-import { ExternalServerController } from './externalNewsServerController';
-import categoryRoutes from '../routes/categoryRoutes';
-import { ArticleController } from './articleController';
-import { ArticleService } from '../services/articleService';
-import { IArticleRepository } from '../interfaces/IArticleRepository';
-import { ArticleRepository } from '../repositories/articleRepository';
-import { ISavedArticleRepository } from '../interfaces/ISavedArticleRepository';
-import { SavedArticleRepository } from '../repositories/savedArticleRepository';
-import { SavedArticleService } from '../services/savedArticleService';
-import { SavedArticleController } from './savedArticleController';
+import { initializeArticleFetchJob } from '../jobs/articleFetchJob';
 import apiRouter from '../routes';
 export default class ServerController {
     private app: Express;
@@ -29,8 +14,7 @@ export default class ServerController {
     }
 
     private async runChroneJobs(): Promise<void>{
-        runArticleFetchNow();
-        scheduleArticleFetchJob();
+        initializeArticleFetchJob();
     }
 
     public async initializeServer(): Promise<void> {
