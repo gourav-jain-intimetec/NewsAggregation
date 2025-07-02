@@ -39,3 +39,24 @@ export interface INotification {
     sent_at: string;
     delivered_via: 'email' | 'app';
 }
+
+export interface IAdminNotification {
+    notification_id: number;
+    report_id: number;
+    read: boolean;
+    created_at: string;
+}
+
+export interface IUserReport {
+    report_id: number;
+    user_id: number;
+    article_id: number;
+    reason: string;
+    created_at: string;
+}
+
+export interface IBlockedKeyword {
+    keyword_id: number;
+    keyword: string;
+    created_at: string;
+}

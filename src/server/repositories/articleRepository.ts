@@ -20,7 +20,7 @@ export class ArticleRepository implements IArticleRepository {
         if (!articleIds.length) return [];
         const placeholders = articleIds.map(() => '?').join(',');
         const [rows] = await this.pool.execute<RowDataPacket[]>(
-            `SELECT * FROM articles WHERE article_id IN (${placeholders})`, articleIds
+            `SELECT * FROM articles WHERE article_id IN (${placeholders}) AND is_hidden = FALSE`, articleIds
         );
         return rows as IArticle[];
     }
@@ -56,7 +56,7 @@ export class ArticleRepository implements IArticleRepository {
 
     async findByDate(date: string): Promise<IArticle[]> {
         const [rows] = await this.pool.execute<RowDataPacket[]>(
-            'SELECT * FROM articles WHERE DATE(published_at) = ? ORDER BY published_at DESC',
+            'SELECT * FROM articles WHERE DATE(published_at) = ? AND is_hidden = FALSE ORDER BY published_at DESC',
             [date]
         );
         return rows as IArticle[];
@@ -64,7 +64,7 @@ export class ArticleRepository implements IArticleRepository {
 
     async findByRange(start: string, end: string): Promise<IArticle[]> {
         const [rows] = await this.pool.execute<RowDataPacket[]>(
-            'SELECT * FROM articles WHERE DATE(published_at) BETWEEN ? AND ? ORDER BY published_at DESC',
+            'SELECT * FROM articles WHERE DATE(published_at) BETWEEN ? AND ? AND is_hidden = FALSE ORDER BY published_at DESC',
             [start, end]
         );
         return rows as IArticle[];
@@ -75,7 +75,7 @@ export class ArticleRepository implements IArticleRepository {
             `SELECT a.* FROM articles a
            JOIN article_categories ac ON a.article_id = ac.article_id
            JOIN categories c ON ac.category_id = c.category_id
-           WHERE DATE(a.published_at) = ? AND c.category_name = ?
+           WHERE DATE(a.published_at) = ? AND c.category_name = ? AND a.is_hidden = FALSE
            ORDER BY a.published_at DESC`,
             [date, categoryName]
         );
@@ -99,7 +99,7 @@ export class ArticleRepository implements IArticleRepository {
     }
     
     async findArticlesSince(since: Date): Promise<IArticle[]> {
-        const query = `SELECT * FROM articles WHERE created_at > ? ORDER BY created_at ASC`;
+        const query = `SELECT * FROM articles WHERE created_at > ? AND is_hidden = FALSE ORDER BY created_at ASC`;
         const [rows] = await this.pool.execute<RowDataPacket[]>(query, [since]);
         return rows as IArticle[];
     }
@@ -120,7 +120,7 @@ export class ArticleRepository implements IArticleRepository {
         let sql = `
             SELECT *
             FROM articles
-            WHERE title LIKE ?
+            WHERE title LIKE ? AND is_hidden = FALSE
         `;
 
         const params: any[] = [`%${query}%`];
