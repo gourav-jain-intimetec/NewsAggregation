@@ -1,5 +1,6 @@
 import express,{ Router, Request, Response, NextFunction } from 'express';
 import { ISavedArticleService, SavedArticleService } from '../services/savedArticleService';
+import { IArticle } from '../../utils/interfaces';
 
 export class SavedArticleController {
     private router: Router;
@@ -44,8 +45,8 @@ export class SavedArticleController {
     private async list(req: Request, res: Response, next: NextFunction) {
         const userId = Number(req.params.userId);
         try {
-            const saved = await this.savedArticleService.getSavedArticles(userId);
-            res.json({ success: true, data: saved });
+            const articles:IArticle[] = await this.savedArticleService.getSavedArticles(userId);
+            res.json({ success: true, data: articles });
         } catch (err) {
             next(err);
         }

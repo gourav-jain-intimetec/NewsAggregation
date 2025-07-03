@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { IArticleService } from '../services/articleService';
+import { IArticle } from '../../utils/interfaces';
 
 export class ArticleController {
     router: Router;
@@ -20,7 +21,7 @@ export class ArticleController {
 
     private async handleToday(req: Request, res: Response, next: NextFunction) {
         try {
-            const articles = await this.articleService.getTodayHeadlines();
+            const articles:IArticle[] = await this.articleService.getTodayHeadlines();
             res.json({ success: true, data: articles });
         } catch (err: any) {
             next(err);
@@ -34,7 +35,7 @@ export class ArticleController {
                 res.status(400).json({ success: false, error: 'start and end parameters are required' });
                 return;
             }
-            const articles = await this.articleService.getRangeHeadlines(start, end);
+            const articles: IArticle[] = await this.articleService.getRangeHeadlines(start, end);
             res.json({ success: true, data: articles });
         } catch (err: any) {
             next(err);
@@ -49,7 +50,8 @@ export class ArticleController {
                 res.status(400).json({ success: false, error: 'category parameter is required' });
                 return;
             }
-            const articles = await this.articleService.getCategoryHeadlines(date, category);
+            console.log("date: ", date);
+            const articles: IArticle[] = await this.articleService.getCategoryHeadlines(date, category);
             res.json({ success: true, data: articles });
         } catch (err: any) {
             next(err);
@@ -65,14 +67,14 @@ export class ArticleController {
         }
 
         try {
-            const results = await this.articleService.searchArticles(
+            const articles: IArticle[] = await this.articleService.searchArticles(
                 String(q),
                 fromDate ? String(fromDate) : undefined,
                 toDate ? String(toDate) : undefined,
                 sort === 'likes' || sort === 'dislikes' ? (sort as 'likes' | 'dislikes') : undefined
             );
 
-            res.json({ success: true, data: results });
+            res.json({ success: true, data: articles });
         } catch (err) {
             next(err);
         }

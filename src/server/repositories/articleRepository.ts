@@ -75,7 +75,7 @@ export class ArticleRepository implements IArticleRepository {
             `SELECT a.* FROM articles a
            JOIN article_categories ac ON a.article_id = ac.article_id
            JOIN categories c ON ac.category_id = c.category_id
-           WHERE DATE(a.published_at) = ? AND c.category_name = ? AND a.is_hidden = FALSE
+           WHERE DATE(a.published_at) >= ? AND c.category_name = ? AND a.is_hidden = FALSE
            ORDER BY a.published_at DESC`,
             [date, categoryName]
         );

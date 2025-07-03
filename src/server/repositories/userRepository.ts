@@ -39,7 +39,7 @@ export class UserRepository implements IUserRepository {
             return undefined;
         }
         const row = rows[0];
-        return new User(row.userId, row.username, row.email, row.password_hash, row.role_id);
+        return new User(row.user_id, row.username, row.email, row.password_hash, row.role_id);
     }
 
     async getNextUserId(): Promise<number> {

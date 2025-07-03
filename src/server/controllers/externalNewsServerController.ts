@@ -24,7 +24,6 @@ export class ExternalServerController {
     private async handleList(request: Request, response: Response): Promise<void> {
         try {
             const servers = await this.externalNewsServerService.listServers();
-            console.log("Servers: ", servers);
             response.json({ success: true, data: servers });
         } catch (err: any) {
             response.status(500).json({ success: false, error: err.message });

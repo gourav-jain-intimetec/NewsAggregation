@@ -10,6 +10,7 @@ export class AuthController {
         try {
             const credentials = await this.authView.getLoginDetails();
             const user = await this.authService.login(credentials);
+            console.log("User: ", user);
             UserSession.setUser(user);
             this.authView.showMessage(`Welcome back, ${user.username}`);
         } catch (err: any) {
