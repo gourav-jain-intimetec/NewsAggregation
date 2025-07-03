@@ -3,10 +3,14 @@ import { IArticle } from "../../utils/interfaces";
 import { IUser } from "../../utils/types";
 import { UserService } from "../services/userService";
 import { UserDashboardView } from "../views/userDashboardView";
+import { UserReactionService } from '../services/userReactionService';
+import { UserReportService } from '../services/userReportService';
 
 export class UserDashboardController {
     private view = new UserDashboardView();
     private service = new UserService();
+    private reactionService = new UserReactionService();
+    private reportService = new UserReportService();
 
     async start(user: IUser): Promise<void> {
         let exit = false;
@@ -107,14 +111,50 @@ export class UserDashboardController {
     private async showArticles(articles: IArticle[],user:IUser) {
         this.view.showArticles(articles);
 
-        if (articles.length) {
+        if (!articles.length) return;
+
+        let back = false;
+        while (!back) {
             const choice = await this.view.promptArticleAction();
-            if (choice === '3') {
-                const articleId = await ask('Article ID to save: ');
-                await this.service.saveArticle(parseInt(articleId), user.userId);
-                this.view.showMessage("Article saved.");
+
+            switch (choice) {
+                case '1':
+                    back = true;
+                    break;
+                case '2':
+                    this.view.showMessage("Logged out.");
+                    process.exit(0);
+                    break;
+                case '3': {
+                    const articleId = await this.view.promptArticleId();
+                    await this.service.saveArticle(articleId, user.userId);
+                    this.view.showMessage("Article saved.");
+                    break;
+                }
+                case '4': {
+                    const articleId = await this.view.promptArticleId();
+                    const reason = await this.view.promptReportReason();
+                    const success = await this.reportService.reportArticle(user.userId, articleId, reason);
+                    this.view.showMessage(success ? "Article reported." : "Failed to report article.");
+                    break;
+                }
+                case '5': {
+                    const articleId = await this.view.promptArticleId();
+                    const success = await this.reactionService.reactToArticle(user.userId, articleId, 'like');
+                    this.view.showMessage(success ? "Reacted with like." : "Failed to react.");
+                    break;
+                }
+                case '6': {
+                    const articleId = await this.view.promptArticleId();
+                    const success = await this.reactionService.reactToArticle(user.userId, articleId, 'dislike');
+                    this.view.showMessage(success ? "Reacted with dislike." : "Failed to react.");
+                    break;
+                }
+                default:
+                    this.view.showMessage("Invalid choice.");
             }
         }
+
     }
 
     private async handleSavedArticles(user: IUser) {

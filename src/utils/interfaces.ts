@@ -42,7 +42,8 @@ export interface INotification {
 
 export interface IAdminNotification {
     notification_id: number;
-    report_id: number;
+    article_id: number;
+    reason: string;
     read: boolean;
     created_at: string;
 }

@@ -66,7 +66,19 @@ export class UserDashboardView {
         console.log('\n1. Back');
         console.log('2. Logout');
         console.log('3. Save Article');
+        console.log('4. Report');
+        console.log('5. Like');
+        console.log('6. Dislike');
         return ask('Choice: ');
+    }
+
+    async promptArticleId(): Promise<number> {
+        const input = await ask('Enter Article ID: ');
+        return parseInt(input, 10);
+    }
+
+    async promptReportReason(): Promise<string> {
+        return ask('Enter reason for reporting: ');
     }
 
     showSavedArticles(articles: IArticle[]): void {

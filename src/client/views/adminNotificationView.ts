@@ -17,11 +17,12 @@ export class AdminNotificationView {
         }
 
         console.log('\nPending Notifications:');
-        notifications.forEach(n => {
-            console.log(`- ID: ${n.notification_id}`);
-            console.log(`  Report ID: ${n.report_id}`);
-            console.log(`  Created At: ${new Date(n.created_at).toLocaleString()}`);
-            console.log(`  Read: ${n.read ? 'Yes' : 'No'}`);
+        notifications.forEach(notification => {
+            console.log(`- ID: ${notification.notification_id}`);
+            console.log(`  Report ID: ${notification.article_id}`);
+            console.log(`  Reason: ${notification.reason}`);
+            console.log(`  Report Time & Date: ${new Date(notification.created_at).toLocaleString()}`);
+            console.log(`  Read: ${notification.read ? 'Yes' : 'No'}`);
             console.log('---');
         });
     }
