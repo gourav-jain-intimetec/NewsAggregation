@@ -1,5 +1,7 @@
 import { AdminService } from '../services/adminService';
 import { AdminDashboardView } from '../views/adminDashboard';
+import { AdminNotificationController } from './adminNotificationController';
+import { ContentModerationController } from './contentModerationController';
 
 export class AdminDashboardController {
     private service = new AdminService();
@@ -24,6 +26,12 @@ export class AdminDashboardController {
                     await this.handleAddCategory();
                     break;
                 case '5':
+                    await this.handleModeration();
+                    break;
+                case '6':
+                    await this.handleReviewReports();
+                    break;
+                case '0':
                     this.view.showMessage('Logged out.');
                     exit = true;
                     break;
@@ -71,5 +79,15 @@ export class AdminDashboardController {
         } catch (err: any) {
             this.view.showMessage(`Error adding category: ${err.message}`);
         }
-      }
+    }
+    
+    private async handleModeration() {
+        const moderationController = new ContentModerationController();
+        await moderationController.start();
+    }
+
+    private async handleReviewReports() {
+        const controller = new AdminNotificationController();
+        await controller.start();
+    }
 }

@@ -1,4 +1,4 @@
-import { ICategory, IExternalServer } from '../../utils/interfaces';
+import { IExternalServer } from '../../utils/interfaces';
 import { ask } from '../../utils/helpers';
 
 export class AdminDashboardView {
@@ -8,7 +8,9 @@ export class AdminDashboardView {
         console.log('2. View the external server’s details');
         console.log('3. Update/Edit the external server’s API key');
         console.log('4. Add new News Category');
-        console.log('5. Logout');
+        console.log('5. Content Moderation');
+        console.log('6. Review Reported Articles');
+        console.log('0. Logout');
         return await ask('Choose an option: ');
     }
 
