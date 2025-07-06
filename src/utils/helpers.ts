@@ -18,7 +18,8 @@ export const parseJsonBody = async (request: IncomingMessage): Promise<any> => {
 
 const readLine = readline.createInterface({
     input: process.stdin,
-    output: process.stdout
+    output: process.stdout,
+    terminal: true
 });
 
 export const askQuestion = (query: string): Promise<string> => {
@@ -26,14 +27,8 @@ export const askQuestion = (query: string): Promise<string> => {
 }
 
 export const ask = (question: string): Promise<string> => {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
-
     return new Promise((resolve) => {
-        rl.question(question, (answer) => {
-            rl.close();
+        readLine.question(question, (answer) => {
             resolve(answer.trim());
         });
     });

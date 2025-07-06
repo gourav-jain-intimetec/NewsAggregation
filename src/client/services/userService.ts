@@ -12,16 +12,16 @@ export class UserService {
     private savedArticleService = new ClientSavedArticleService();
     private notificationService = new ClientNotificationService();
 
-    async getTodayHeadlines() {
-        return this.articleService.getTodayHeadlines();
+    async getTodayHeadlines(userId: number) {
+        return this.articleService.getTodayHeadlines(userId);
     }
 
-    async getHeadlinesByRange(start: string, end:string) {
-        return this.articleService.getRangeHeadlines(start, end);
+    async getHeadlinesByRange(userId: number,start: string, end:string) {
+        return this.articleService.getRangeHeadlines(userId,start, end);
     }
 
-    async getHeadlinesByRangeAndCategory(start: string, end: string, category: string) {
-        return this.articleService.getCategoryHeadlines(start, category);
+    async getHeadlinesByRangeAndCategory(userId: number,start: string, end: string, category: string) {
+        return this.articleService.getCategoryHeadlines(userId,start, end, category);
     }
 
     async saveArticle(articleId: number, userId: number): Promise<void> {
@@ -36,8 +36,8 @@ export class UserService {
         await this.savedArticleService.removeSavedArticle(articleId, userId);
     }
 
-    async searchArticles(query: string, fromDate?: string, toDate?: string, sort?: string): Promise<IArticle[]> {
-        return this.articleService.searchArticles(query, fromDate, toDate, sort);
+    async searchArticles(userId: number,query: string, fromDate?: string, toDate?: string, sort?: string): Promise<IArticle[]> {
+        return this.articleService.searchArticles(userId,query, fromDate, toDate, sort);
     }
 
     async getNotifications(user: IUser): Promise<INotification[]> {

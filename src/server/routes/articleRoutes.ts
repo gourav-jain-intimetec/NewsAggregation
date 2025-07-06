@@ -3,15 +3,19 @@ import { ArticleRepository } from '../repositories/articleRepository';
 import { ArticleService, IArticleService } from '../services/articleService';
 import { ArticleController } from '../controllers/articleController';
 import { IRouteModule } from './IRouteModule';
-import { IArticleRepository } from '../interfaces/IArticleRepository';
+import { PersonalizedArticleRepository } from '../repositories/personalizedArticleRepository';
+import { PersonalizedArticleService } from '../services/personalizedArticleService';
 
 export class ArticleRoutes implements IRouteModule {
     private router = express.Router();
 
     constructor() {
-        const repository :IArticleRepository = new ArticleRepository();
-        const service:IArticleService = new ArticleService(repository);
-        const controller = new ArticleController(service);
+        const articleRepository = new ArticleRepository();
+        const personalizedRepository = new PersonalizedArticleRepository(articleRepository);
+
+        const articleService = new ArticleService(articleRepository);
+        const personalizedArticleService = new PersonalizedArticleService(personalizedRepository);
+        const controller = new ArticleController(personalizedArticleService);
         this.router.use('/news', controller.router);
     }
 

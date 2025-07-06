@@ -7,7 +7,7 @@ export interface IArticleRepository {
     saveArticleCategory(articleId: number, categoryId: number): Promise<void>;
     findByDate(date: string): Promise<IArticle[]>;
     findByRange(start: string, end: string): Promise<IArticle[]>;
-    findByDateAndCategory(date: string, categoryName: string): Promise<IArticle[]>;
+    findByDateAndCategory(start: string,end:string, categoryName: string): Promise<IArticle[]>;
     findArticlesByIds(articleIds: number[]): Promise<IArticle[]>;
     getArticleCategories(articleId: number): Promise<number[]>;
     getArticleKeywords(articleId: number): Promise<string[]>;

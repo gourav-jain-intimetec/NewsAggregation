@@ -9,6 +9,7 @@ export interface IArticle {
     published_at: string;
     likes: number;
     dislikes: number;
+    keywords?: String[];
 }
 
 export interface IExternalServer {

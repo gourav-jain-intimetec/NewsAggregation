@@ -70,14 +70,14 @@ export class ArticleRepository implements IArticleRepository {
         return rows as IArticle[];
     }
 
-    async findByDateAndCategory(date: string, categoryName: string): Promise<IArticle[]> {
+    async findByDateAndCategory(start: string,end:string, categoryName: string): Promise<IArticle[]> {
         const [rows] = await this.pool.execute<RowDataPacket[]>(
             `SELECT a.* FROM articles a
            JOIN article_categories ac ON a.article_id = ac.article_id
            JOIN categories c ON ac.category_id = c.category_id
-           WHERE DATE(a.published_at) >= ? AND c.category_name = ? AND a.is_hidden = FALSE
+           WHERE DATE(a.published_at) BETWEEN ? AND ? AND c.category_name = ? AND a.is_hidden = FALSE
            ORDER BY a.published_at DESC`,
-            [date, categoryName]
+            [start,end,categoryName]
         );
         return rows as IArticle[];
     }

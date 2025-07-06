@@ -1,6 +1,7 @@
 import { IArticle } from '../../utils/interfaces';
 import { IArticleRepository } from '../interfaces/IArticleRepository';
 import { ISavedArticleRepository } from '../interfaces/ISavedArticleRepository';
+import { IUserPreferenceRepository } from '../interfaces/IUserPreferenceRepository';
 
 export interface ISavedArticleService {
     saveArticleForUser(userId: number, articleId: number): Promise<number>;
@@ -11,11 +12,17 @@ export interface ISavedArticleService {
 export class SavedArticleService implements ISavedArticleService {
     constructor(
         private savedArticleRepository: ISavedArticleRepository,
-        private articleRepository: IArticleRepository
+        private articleRepository: IArticleRepository,
+        private userPrefRepository: IUserPreferenceRepository
     ) { }
 
     async saveArticleForUser(userId: number, articleId: number): Promise<number> {
-        return this.savedArticleRepository.save(userId, articleId);
+        const savedArticleId = this.savedArticleRepository.save(userId, articleId);
+        const keywords = await this.articleRepository.getArticleKeywords(articleId);
+        const categories = await this.articleRepository.getArticleCategories(articleId);
+        await this.userPrefRepository.addPreferenceKeywords(userId, keywords);
+        await this.userPrefRepository.addPreferenceCategories(userId, categories);
+        return savedArticleId;
     }
 
     async removeSavedArticle(userId: number, articleId: number): Promise<void> {

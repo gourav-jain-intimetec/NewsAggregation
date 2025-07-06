@@ -4,7 +4,7 @@ import { IArticleRepository } from '../interfaces/IArticleRepository';
 export interface IArticleService {
     getTodayHeadlines(): Promise<IArticle[]>;
     getRangeHeadlines(start: string, end: string): Promise<IArticle[]>;
-    getCategoryHeadlines(date: string, category: string): Promise<IArticle[]>;
+    getCategoryHeadlines(start: string, end: string, category: string): Promise<IArticle[]>;
     searchArticles(
         query: string,
         fromDate?: string,
@@ -26,10 +26,11 @@ export class ArticleService implements IArticleService {
     }
 
     getCategoryHeadlines(
-        date: string = new Date().toISOString().slice(0, 10),
+        start: string = new Date().toISOString().slice(0, 10),
+        end: string = new Date().toISOString().slice(0, 10),
         category: string
     ): Promise<IArticle[]> {
-        return this.articleRepository.findByDateAndCategory(date, category);
+        return this.articleRepository.findByDateAndCategory(start,end, category);
     }
 
     async searchArticles(

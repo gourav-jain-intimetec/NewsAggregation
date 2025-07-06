@@ -50,7 +50,7 @@ export class UserDashboardController {
 
             switch (mainChoice) {
                 case '1':
-                    await this.showArticles(await this.service.getTodayHeadlines(), user);
+                    await this.showArticles(await this.service.getTodayHeadlines(user.userId), user);
                     break;
 
                 case '2':
@@ -81,19 +81,19 @@ export class UserDashboardController {
 
             switch (categoryChoice) {
                 case '1':
-                    await this.showArticles(await this.service.getHeadlinesByRange(start, end), user);
+                    await this.showArticles(await this.service.getHeadlinesByRange(user.userId,start, end), user);
                     break;
                 case '2':
-                    await this.showArticles(await this.service.getHeadlinesByRangeAndCategory(start, end, 'business'), user);
+                    await this.showArticles(await this.service.getHeadlinesByRangeAndCategory(user.userId,start, end, 'business'), user);
                     break;
                 case '3':
-                    await this.showArticles(await this.service.getHeadlinesByRangeAndCategory(start, end, 'entertainment'), user);
+                    await this.showArticles(await this.service.getHeadlinesByRangeAndCategory(user.userId,start, end, 'entertainment'), user);
                     break;
                 case '4':
-                    await this.showArticles(await this.service.getHeadlinesByRangeAndCategory(start, end, 'sports'), user);
+                    await this.showArticles(await this.service.getHeadlinesByRangeAndCategory(user.userId,start, end, 'sports'), user);
                     break;
                 case '5':
-                    await this.showArticles(await this.service.getHeadlinesByRangeAndCategory(start, end, 'technology'), user);
+                    await this.showArticles(await this.service.getHeadlinesByRangeAndCategory(user.userId,start, end, 'technology'), user);
                     break;
                 case '6':
                     back = true;
@@ -190,7 +190,7 @@ export class UserDashboardController {
         const toDate = await ask('To date (YYYY-MM-DD) or blank: ');
         const sortBy = await ask('Sort by (likes/dislikes/none): ');
 
-        const articles = await this.service.searchArticles(query, fromDate, toDate, sortBy);
+        const articles = await this.service.searchArticles(user.userId,query, fromDate, toDate, sortBy);
         await this.showArticles(articles,user);
     }
 
