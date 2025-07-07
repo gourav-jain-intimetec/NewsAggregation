@@ -6,6 +6,6 @@ export class MainMenuView {
         console.log("1. Login");
         console.log("2. Signup");
         console.log("0. Exit");
-        return await ask("Choose an option: ");
+        return ask("Choose an option: ");
     }
 }

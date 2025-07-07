@@ -1,10 +1,12 @@
 import { ask } from "../../utils/helpers";
-import { IArticle } from "../../utils/interfaces";
+import { IArticle, INotificationSetting } from "../../utils/interfaces";
 import { IUser } from "../../utils/types";
 import { UserService } from "../services/userService";
 import { UserDashboardView } from "../views/userDashboardView";
 import { UserReactionService } from '../services/userReactionService';
 import { UserReportService } from '../services/userReportService';
+import { UserNotificationView } from "../views/userNotificationView";
+import { ClientNotificationService } from "../services/clientNotificationService";
 
 export class UserDashboardController {
     private view = new UserDashboardView();
@@ -174,7 +176,7 @@ export class UserDashboardController {
                     this.view.showMessage("Logged out.");
                     process.exit(0);
                 case '3':
-                    const articleId = await ask('Article ID to delete: ');
+                    const articleId = ask('Article ID to delete: ');
                     await this.service.deleteSavedArticle(parseInt(articleId),user.userId);
                     this.view.showMessage("Deleted.");
                     break;
@@ -185,10 +187,10 @@ export class UserDashboardController {
     }
 
     private async handleSearch(user: IUser) {
-        const query = await ask('Enter search query: ');
-        const fromDate = await ask('From date (YYYY-MM-DD) or blank: ');
-        const toDate = await ask('To date (YYYY-MM-DD) or blank: ');
-        const sortBy = await ask('Sort by (likes/dislikes/none): ');
+        const query = ask('Enter search query: ');
+        const fromDate = ask('From date (YYYY-MM-DD) or blank: ');
+        const toDate = ask('To date (YYYY-MM-DD) or blank: ');
+        const sortBy = ask('Sort by (likes/dislikes/none): ');
 
         const articles = await this.service.searchArticles(user.userId,query, fromDate, toDate, sortBy);
         await this.showArticles(articles,user);
@@ -222,35 +224,94 @@ export class UserDashboardController {
 
     private async handleConfigureNotifications(user: IUser) {
         let back = false;
+        const notificationView = new UserNotificationView();
+        const notificationService = new ClientNotificationService();
 
         while (!back) {
-            const choice = await this.view.promptNotificationConfigMenu();
+            const categories = await notificationService.getAllCategories();
+            const categoryMap = categories.reduce((map, c) => {
+                map[c.category_id] = c.category_name;
+                return map;
+            }, {} as Record<number, string>);
 
-            switch (choice) {
-                case '1':
-                    await this.service.enableNotifications(user);
-                    this.view.showMessage("Notifications enabled.");
-                    break;
-                case '2':
-                    await this.service.disableNotifications(user);
-                    this.view.showMessage("Notifications disabled.");
-                    break;
-                case '3':
-                    const keyword = await ask('Enter keyword to add: ');
-                    await this.service.addNotificationKeyword(user, keyword);
-                    this.view.showMessage("Keyword added.");
-                    break;
-                case '4':
-                    const removeKeyword = await ask('Enter keyword to remove: ');
-                    await this.service.removeNotificationKeyword(user, removeKeyword);
-                    this.view.showMessage("Keyword removed.");
-                    break;
-                case '5':
-                    back = true;
-                    break;
-                default:
-                    this.view.showMessage("Invalid choice.");
+            const settings = await notificationService.getUserSettings(user.userId);
+
+            notificationView.showConfigMenu(categories, settings);
+            const choice = await notificationView.getUserChoice();
+            const choiceNum = parseInt(choice);
+
+            if (choiceNum === settings.length + 1) {
+                back = true;
+                continue;
+            }
+
+            if (choiceNum === settings.length + 2) {
+                this.view.showMessage("Logged out.");
+                process.exit(0);
+            }
+
+            if (choiceNum >= 1 && choiceNum <= settings.length) {
+                const selectedCategory = categories[choiceNum - 1];
+                const existingSetting = settings.find((s:INotificationSetting) => s.category_id === selectedCategory.category_id);
+
+                let selectedSetting: INotificationSetting;
+                if (existingSetting) {
+                    selectedSetting = existingSetting;
+                } else {
+                    selectedSetting = {
+                        id: 0,
+                        user_id: user.userId,
+                        category_id: selectedCategory.category_id,
+                        enabled: false,
+                        keywords: []
+                    };
+                }
+                await this.handleConfigureCategory(user, selectedSetting, selectedCategory.category_name);
             }
         }
     }
+
+    private async handleConfigureCategory(user: IUser, setting: INotificationSetting, categoryName: string) {
+        let back = false;
+        const notificationView = new UserNotificationView();
+        const notificationService = new ClientNotificationService();
+
+        while (!back) {
+            notificationView.showCategoryDetail(setting, categoryName);
+            const choice = await notificationView.getUserChoice();
+            const choiceNum = parseInt(choice);
+
+            if (choiceNum === setting.keywords.length + 4) {
+                back = true;
+                continue;
+            }
+
+            if (choiceNum === setting.keywords.length + 5) {
+                this.view.showMessage("Logged out.");
+                process.exit(0);
+            }
+
+            if (choiceNum === setting.keywords.length + 1) {
+                const newStatus = !setting.enabled;
+                await notificationService.configureSetting(user.userId, setting.category_id, newStatus);
+                setting.enabled = newStatus;
+                this.view.showMessage(`Notifications for ${categoryName} ${newStatus ? 'enabled' : 'disabled'}.`);
+            }
+
+            if (choiceNum === setting.keywords.length + 2) {
+                const newKeyword = await notificationView.promptAddKeyword();
+                setting.keywords.push(newKeyword);
+                await notificationService.configureSetting(user.userId,setting.category_id,setting.enabled, setting.keywords);
+                this.view.showMessage("Keyword added.");
+            }
+
+            if (choiceNum === setting.keywords.length + 3) {
+                const removeKeyword = await notificationView.promptRemoveKeyword();
+                setting.keywords = setting.keywords.filter(k => k !== removeKeyword);
+                await notificationService.configureSetting(user.userId, setting.category_id, setting.enabled, setting.keywords);
+                this.view.showMessage("Keyword removed.");
+            }
+        }
+    }
+    
 }

@@ -1,5 +1,5 @@
 import { LoginRequest, SignupRequest } from '../../utils/types';
-import { ask } from '../../utils/helpers';
+import { ask, askMasked, isValidEmail } from '../../utils/helpers';
 
 export class AuthView {
     showWelcome(): void {
@@ -7,15 +7,28 @@ export class AuthView {
     }
 
     async getLoginDetails(): Promise<LoginRequest> {
-        const email = await ask("Email: ");
-        const password = await ask("Password: ");
+        let email = "";
+        while (true) {
+            email = await ask("Email: ");
+            if (isValidEmail(email)) break;
+            console.log("Invalid email format. Please try again.");
+        }
+
+        const password = await askMasked("Password: ");
         return { email, password };
     }
 
     async getSignupDetails(): Promise<SignupRequest> {
         const username = await ask("Username: ");
-        const email = await ask("Email: ");
-        const password = await ask("Password: ");
+
+        let email = "";
+        while (true) {
+            email = await ask("Email: ");
+            if (isValidEmail(email)) break;
+            console.log("Invalid email format. Please try again.");
+        }
+
+        const password = await askMasked("Password: ");
         return { username, email, password };
     }
 

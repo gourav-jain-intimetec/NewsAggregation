@@ -28,7 +28,7 @@ export class AdminNotificationView {
     }
 
     async promptNotificationId(): Promise<number> {
-        const input = await ask('Enter Notification ID to mark as read: ');
+        const input = ask('Enter Notification ID to mark as read: ');
         return parseInt(input, 10);
     }
 

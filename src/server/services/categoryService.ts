@@ -13,4 +13,8 @@ export class CategoryService {
         }
         return this.categoryRepo.createCategory(name);
     }
+
+    async getAllCategories(): Promise<{ category_id: number, category_name: string }[]> {
+        return this.categoryRepo.getAllCategories();
+    }
 }

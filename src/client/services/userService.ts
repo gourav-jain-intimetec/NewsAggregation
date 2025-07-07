@@ -3,7 +3,7 @@ import { ClientArticleService } from './clientArticleService';
 import { ClientSavedArticleService } from './clientSavedArticleService';
 import { ClientNotificationService } from './clientNotificationService';
 import { IUser } from '../../utils/types';
-import { IArticle, INotification } from '../../utils/interfaces';
+import { IArticle, INotification, IUserNotification } from '../../utils/interfaces';
 
 dotenv.config();
 
@@ -40,7 +40,7 @@ export class UserService {
         return this.articleService.searchArticles(userId,query, fromDate, toDate, sort);
     }
 
-    async getNotifications(user: IUser): Promise<INotification[]> {
+    async getNotifications(user: IUser): Promise<IUserNotification[]> {
         return this.notificationService.getNotifications(user.userId);
     }
 

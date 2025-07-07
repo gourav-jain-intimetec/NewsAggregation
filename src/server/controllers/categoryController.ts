@@ -14,4 +14,13 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     }
 });
 
+router.get('/', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const categories = await service.getAllCategories();
+        res.json({ success: true, data: categories });
+    } catch (err: any) {
+        next(err);
+    }
+});
+
 export default router;

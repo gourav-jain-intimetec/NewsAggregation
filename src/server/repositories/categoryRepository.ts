@@ -32,7 +32,13 @@ export class CategoryRepository {
         const query = 'SELECT 1 FROM categories WHERE category_name = ? LIMIT 1';
         const [rows] = await this.pool.execute<RowDataPacket[]>(query,[name]);
         return rows.length > 0;
-      }
+    }
+
+    async getAllCategories(): Promise<{ category_id: number, category_name: string }[]> {
+        const query = 'SELECT category_id, category_name FROM categories WHERE is_hidden = FALSE ORDER BY category_name ASC';
+        const [rows] = await this.pool.execute<RowDataPacket[]>(query);
+        return rows as { category_id: number, category_name: string }[];
+    }
 
     //TODO: Refactor logic of categorization.
     async inferOrCreateCategory(article: IArticle): Promise<number> {

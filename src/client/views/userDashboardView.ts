@@ -1,5 +1,5 @@
 import { ask } from "../../utils/helpers";
-import { IArticle, INotification } from "../../utils/interfaces";
+import { IArticle, INotification, IUserNotification } from "../../utils/interfaces";
 import { IUser } from "../../utils/types";
 
 export class UserDashboardView {
@@ -29,8 +29,8 @@ export class UserDashboardView {
     }
 
     async promptDateRange(): Promise<{ start: string, end: string }> {
-        const start = await ask('Enter start date (YYYY-MM-DD): ');
-        const end = await ask('Enter end date (YYYY-MM-DD): ');
+        const start = ask('Enter start date (YYYY-MM-DD): ');
+        const end = ask('Enter end date (YYYY-MM-DD): ');
         return { start, end };
     }
 
@@ -53,12 +53,12 @@ export class UserDashboardView {
             return;
         }
 
-        articles.forEach(a => {
-            console.log(`\nArticle Id: ${a.article_id}`);
-            console.log(`${a.title}`);
-            console.log(`${a.description}`);
-            console.log(`Source: ${a.source}`);
-            console.log(`URL: ${a.url}`);
+        articles.forEach(article => {
+            console.log(`\nArticle Id: ${article.article_id}`);
+            console.log(`${article.title}`);
+            console.log(`${article.description}`);
+            console.log(`Source: ${article.source}`);
+            console.log(`URL: ${article.url}`);
         });
     }
 
@@ -73,7 +73,7 @@ export class UserDashboardView {
     }
 
     async promptArticleId(): Promise<number> {
-        const input = await ask('Enter Article ID: ');
+        const input = ask('Enter Article ID: ');
         return parseInt(input, 10);
     }
 
@@ -113,16 +113,16 @@ export class UserDashboardView {
         return ask('Choice: ');
     }
 
-    showNotifications(notifications: INotification[]): void {
+    showNotifications(notifications: IUserNotification[]): void {
         console.log('\nNotifications:');
         if (!notifications.length) {
             console.log('No notifications.');
             return;
         }
 
-        notifications.forEach(n => {
-            console.log(`\n${n.article_id}`);
-            console.log(`Date: ${new Date(n.sent_at).toLocaleString()}`);
+        notifications.forEach(notification => {
+            console.log(`\nTitle: ${notification.title}`);
+            console.log(`Date: ${new Date(notification.sent_at).toLocaleString()}`);
         });
     }
 

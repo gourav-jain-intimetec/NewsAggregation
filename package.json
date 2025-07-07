@@ -17,6 +17,7 @@
     "@types/node": "^24.0.3",
     "@types/nodemailer": "^6.4.17",
     "@types/pg": "^8.15.4",
+    "@types/readline-sync": "^1.4.8",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
@@ -30,6 +31,7 @@
     "node-cron": "^4.1.0",
     "nodemailer": "^7.0.4",
     "pg": "^8.16.1",
+    "readline-sync": "^1.4.10",
     "typeorm": "^0.3.24"
   }
 }

@@ -21,12 +21,12 @@ export class AdminModerationView {
     }
 
     async promptArticleId(): Promise<number> {
-        const input = await ask('Enter article ID to hide: ');
+        const input = ask('Enter article ID to hide: ');
         return parseInt(input, 10);
     }
 
     async promptCategoryId(): Promise<number> {
-        const input = await ask('Enter category ID to hide: ');
+        const input = ask('Enter category ID to hide: ');
         return parseInt(input, 10);
     }
 

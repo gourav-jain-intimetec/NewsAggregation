@@ -1,5 +1,5 @@
 import { INotificationRepository } from '../interfaces/INotificationRepository';
-import { INotificationSetting } from '../../utils/interfaces';
+import { INotificationSetting, IUserNotification } from '../../utils/interfaces';
 
 export interface INotificationService {
     getUserSettings(userId: number): Promise<INotificationSetting[]>;
@@ -10,7 +10,7 @@ export interface INotificationService {
         keywords: string[]
     ): Promise<void>;
     removeSetting(userId: number, categoryId: number): Promise<void>;
-    listNotifications(userId: number): Promise<Notification[]>;
+    listNotifications(userId: number): Promise<IUserNotification[]>;
     sendNotification(
         userId: number,
         articleId: number,
@@ -38,7 +38,7 @@ export class NotificationService implements INotificationService {
         await this.notificationRepository.removeSetting(userId, categoryId);
     }
 
-    async listNotifications(userId: number): Promise<Notification[]> {
+    async listNotifications(userId: number): Promise<IUserNotification[]> {
         return this.notificationRepository.getNotificationsForUser(userId);
     }
 

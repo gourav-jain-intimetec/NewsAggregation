@@ -11,7 +11,7 @@ export class AdminDashboardView {
         console.log('5. Content Moderation');
         console.log('6. Review Reported Articles');
         console.log('0. Logout');
-        return await ask('Choose an option: ');
+        return ask('Choose an option: ');
     }
 
     showServers(servers: IExternalServer[]): void {

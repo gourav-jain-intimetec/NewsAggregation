@@ -41,6 +41,13 @@ export interface INotification {
     delivered_via: 'email' | 'app';
 }
 
+export interface IUserNotification {
+    id: number;
+    user_id: number;
+    title: string;
+    sent_at: string;
+}
+
 export interface IAdminNotification {
     notification_id: number;
     article_id: number;

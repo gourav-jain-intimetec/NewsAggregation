@@ -1,5 +1,5 @@
 import { IncomingMessage } from 'http';
-import readline from 'readline';
+import readlineSync from 'readline-sync';
 
 export const parseJsonBody = async (request: IncomingMessage): Promise<any> => {
     return new Promise((resolve, reject) => {
@@ -16,21 +16,14 @@ export const parseJsonBody = async (request: IncomingMessage): Promise<any> => {
     });
 }
 
-const readLine = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-    terminal: true
-});
+export const ask = (question: string): string => {
+    return readlineSync.question(question);
+};
 
-export const askQuestion = (query: string): Promise<string> => {
-    return new Promise((resolve) => readLine.question(query, resolve));
-}
-
-export const ask = (question: string): Promise<string> => {
-    return new Promise((resolve) => {
-        readLine.question(question, (answer) => {
-            resolve(answer.trim());
-        });
+export const askMasked = (question: string): string => {
+    return readlineSync.question(question, {
+        hideEchoBack: true,
+        mask:'*'
     });
 };
 
@@ -38,4 +31,9 @@ export function getRandomInt(min: number, max: number): number {
     const minCeil = Math.ceil(min);
     const maxFloor = Math.floor(max);
     return Math.floor(Math.random() * (maxFloor - minCeil + 1)) + minCeil;
+}
+
+export function isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
 }
