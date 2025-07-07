@@ -39,8 +39,7 @@ export class CategoryRepository {
         const [rows] = await this.pool.execute<RowDataPacket[]>(query);
         return rows as { category_id: number, category_name: string }[];
     }
-
-    //TODO: Refactor logic of categorization.
+    
     async inferOrCreateCategory(article: IArticle): Promise<number> {
         const text = `${article.title} ${article.description}`.toLowerCase();
         let categoryName = 'General';

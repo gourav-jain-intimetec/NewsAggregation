@@ -1,17 +1,22 @@
 import { AdminService } from '../services/adminService';
-import { AdminDashboardView } from '../views/adminDashboard';
+import { AdminDashboardView } from '../views/adminDashboardView';
 import { AdminNotificationController } from './adminNotificationController';
 import { ContentModerationController } from './contentModerationController';
+import { AdminCategoryService } from '../services/adminCategoryService';
 
 export class AdminDashboardController {
-    private service = new AdminService();
-    private view = new AdminDashboardView();
+    constructor(
+        private adminService: AdminService = new AdminService(),
+        private adminDashboardView: AdminDashboardView = new AdminDashboardView(),
+        private adminCategoryService: AdminCategoryService = new AdminCategoryService(),
+        private contentModerationController: ContentModerationController = new ContentModerationController(),
+        private adminNotificationController: AdminNotificationController = new AdminNotificationController()
+    ) {}
 
     async start(): Promise<void> {
         let exit = false;
-
         while (!exit) {
-            const choice = await this.view.promptOption();
+            const choice = await this.adminDashboardView.promptOption();
             switch (choice) {
                 case '1':
                     await this.handleListServers();
@@ -26,68 +31,66 @@ export class AdminDashboardController {
                     await this.handleAddCategory();
                     break;
                 case '5':
-                    await this.handleModeration();
+                    await this.handleContentModeration();
                     break;
                 case '6':
-                    await this.handleReviewReports();
+                    await this.handleNotificationReviews();
                     break;
                 case '0':
-                    this.view.showMessage('Logged out.');
+                    this.adminDashboardView.showMessage('Logged out.');
                     exit = true;
                     break;
                 default:
-                    this.view.showMessage('Invalid choice. Try again.');
+                    this.adminDashboardView.showMessage('Invalid choice. Try again.');
             }
         }
     }
 
-    private async handleListServers() {
+    private async handleListServers(): Promise<void> {
         try {
-            const servers = await this.service.listServers();
-            this.view.showServers(servers);
-        } catch (err: any) {
-            this.view.showMessage(`Error listing servers: ${err.message}`);
+            const servers = await this.adminService.listServers();
+            this.adminDashboardView.showServers(servers);
+        } catch (error) {
+            this.adminDashboardView.showMessage('Error listing servers: ' + (error instanceof Error ? error.message : ''));
         }
     }
 
-    private async handleViewServer() {
+    private async handleViewServer(): Promise<void> {
         try {
-            const name = await this.view.promptServerName();
-            const s = await this.service.viewServer(name);
-            this.view.showServerDetails(s);
-        } catch (err: any) {
-            this.view.showMessage(`Error viewing server: ${err.message}`);
+            const serverName = await this.adminDashboardView.promptServerName();
+            const server = await this.adminService.viewServer(serverName);
+            this.adminDashboardView.showServerDetails(server);
+        } catch (error) {
+            this.adminDashboardView.showMessage('Error viewing server: ' + (error instanceof Error ? error.message : ''));
         }
     }
 
-    private async handleUpdateServer() {
+    private async handleUpdateServer(): Promise<void> {
         try {
-            const name = await this.view.promptServerName();
-            const newKey = await this.view.promptNewApiKey();
-            await this.service.updateServerKey(name, newKey);
-            this.view.showMessage('API key updated successfully.');
-        } catch (err: any) {
-            this.view.showMessage(`Error updating server: ${err.message}`);
+            const serverName = await this.adminDashboardView.promptServerName();
+            const newKey = await this.adminDashboardView.promptNewApiKey();
+            await this.adminService.updateServerKey(serverName, newKey);
+            this.adminDashboardView.showMessage('API key updated successfully.');
+        } catch (error) {
+            this.adminDashboardView.showMessage('Error updating server: ' + (error instanceof Error ? error.message : ''));
         }
     }
 
-    private async handleAddCategory() {
+    private async handleAddCategory(): Promise<void> {
         try {
-            const name = await this.view.promptCategoryName();
-            const category = await this.service.addCategory(name);
-            this.view.showCategoryAdded();
-        } catch (err: any) {
-            this.view.showMessage(`Error adding category: ${err.message}`);
+            const categoryName = await this.adminDashboardView.promptCategoryName();
+            await this.adminCategoryService.addCategory(categoryName);
+            this.adminDashboardView.showCategoryAdded();
+        } catch (error) {
+            this.adminDashboardView.showMessage('Error adding category: ' + (error instanceof Error ? error.message : ''));
         }
     }
-    
-    private async handleModeration() {
-        const moderationController = new ContentModerationController();
-        await moderationController.start();
+
+    private async handleContentModeration(): Promise<void> {
+        await this.contentModerationController.start();
     }
 
-    private async handleReviewReports() {
-        const controller = new AdminNotificationController();
-        await controller.start();
+    private async handleNotificationReviews(): Promise<void> {
+        await this.adminNotificationController.start();
     }
 }

@@ -46,7 +46,6 @@ export class NotificationRepository implements INotificationRepository {
 
         await this.pool.execute(`DELETE FROM notification_keywords WHERE setting_id = ?`, [settingId]);
 
-        console.log("Keywords: ", keywords);
         if (keywords && keywords.length > 0) {
             const insertKeyword = `INSERT INTO notification_keywords (setting_id, keyword) VALUES (?, ?)`;
             const insertPromises = keywords.map(kw =>

@@ -23,16 +23,16 @@ export class EmailService {
         const subject = `New Article Matching Your Interests: ${article.title}`;
 
         const html = `
-      <h2>${article.title}</h2>
-      <p><strong>Description:</strong> ${article.description}</p>
-      <p><strong>Source:</strong> ${article.source}</p>
-      <p><strong>Published At:</strong> ${article.published_at}</p>
-      <p>
-        <a href="${article.url}" target="_blank">Read Full Article</a>
-      </p>
-      <br>
-      <p>Thank you for using News Aggregation App!</p>
-    `;
+            <h2>${article.title}</h2>
+            <p><strong>Description:</strong> ${article.description}</p>
+            <p><strong>Source:</strong> ${article.source}</p>
+            <p><strong>Published At:</strong> ${article.published_at}</p>
+            <p>
+                <a href="${article.url}" target="_blank">Read Full Article</a>
+            </p>
+            <br>
+            <p>Thank you for using News Aggregation App!</p>
+            `;
 
         const mailOptions = {
             from: this.from,

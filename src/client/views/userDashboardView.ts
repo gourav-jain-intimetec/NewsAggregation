@@ -139,4 +139,12 @@ export class UserDashboardView {
     showMessage(message: string) {
         console.log(`\n${message}`);
     }
+
+    async promptSearchParams(): Promise<{ query: string, fromDate: string, toDate: string, sortBy: string }> {
+        const query = ask('Enter search query: ');
+        const fromDate = ask('From date (YYYY-MM-DD) or blank: ');
+        const toDate = ask('To date (YYYY-MM-DD) or blank: ');
+        const sortBy = ask('Sort by (likes/dislikes/none): ');
+        return { query, fromDate, toDate, sortBy };
+    }
 }
